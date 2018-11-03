@@ -1,1 +1,1 @@
-# majestic-l
+# Majestic L
