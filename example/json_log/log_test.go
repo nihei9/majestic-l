@@ -1,30 +1,27 @@
-package text_log
+package json_log
 
 import (
+	"encoding/json"
 	"fmt"
-	"regexp"
 	"testing"
 
 	mj "github.com/nihei9/majestic-l"
 )
 
 type Log struct {
-	Level   string `mj:"level"`
-	ID      string `mj:"id"`
-	Message string `mj:"message"`
+	Level   string `json:"level" mj:"level"`
+	ID      string `json:"id" mj:"id"`
+	Message string `json:"message" mj:"message"`
 }
 
 func parse(src []byte) (map[string]interface{}, error) {
-	re := regexp.MustCompile(`^\s*(.+)\s+(.+)\s+(.+)$`)
-	s := re.FindSubmatch(src)
-	if len(s) != 4 {
-		return nil, fmt.Errorf("Pase error")
-	}
+	log := &Log{}
+	json.Unmarshal(src, log)
 
 	return map[string]interface{}{
-		"level":   string(s[1]),
-		"id":      string(s[2]),
-		"message": string(s[3]),
+		"level":   log.Level,
+		"id":      log.ID,
+		"message": log.Message,
 	}, nil
 }
 
@@ -48,7 +45,18 @@ func TestPlainTextLog(t *testing.T) {
 		t.Error(err)
 	}
 	mj.Verify(t, config, expectations, func() {
-		fmt.Println("info I0001 start")
-		fmt.Println("info I0002 end")
+		b1, _ := json.Marshal(&Log{
+			Level:   "info",
+			ID:      "I0001",
+			Message: "start",
+		})
+		fmt.Println(string(b1))
+
+		b2, _ := json.Marshal(&Log{
+			Level:   "info",
+			ID:      "I0002",
+			Message: "end",
+		})
+		fmt.Println(string(b2))
 	})
 }
