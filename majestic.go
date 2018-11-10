@@ -2,6 +2,7 @@ package majestic
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
@@ -10,6 +11,8 @@ import (
 )
 
 type Parser func(src []byte) (map[string]interface{}, error)
+
+var JSONParser = parseJSON
 
 type Expectation map[string]MatchableValue
 
@@ -145,4 +148,14 @@ func (v *verifier) consume() bool {
 	}
 
 	return true
+}
+
+func parseJSON(src []byte) (map[string]interface{}, error) {
+	log := map[string]interface{}{}
+	err := json.Unmarshal(src, &log)
+	if err != nil {
+		return nil, err
+	}
+
+	return log, nil
 }

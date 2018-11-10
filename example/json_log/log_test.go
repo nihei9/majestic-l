@@ -14,20 +14,9 @@ type Log struct {
 	Message string `json:"message" mj:"message"`
 }
 
-func parse(src []byte) (map[string]interface{}, error) {
-	log := &Log{}
-	json.Unmarshal(src, log)
-
-	return map[string]interface{}{
-		"level":   log.Level,
-		"id":      log.ID,
-		"message": log.Message,
-	}, nil
-}
-
 func TestPlainTextLog(t *testing.T) {
 	config := &mj.Config{
-		Parser: parse,
+		Parser: mj.JSONParser,
 	}
 	expectations, err := mj.Expect(
 		Log{
